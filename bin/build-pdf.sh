@@ -61,13 +61,13 @@ sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | sed -E 's/`(S_n|p_0|p_1|p₀|p₁|ε|X_i|FAIL_TO_PASS|PASS_TO_PASS|H|T|N|K)`/$\1$/g' \
   | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/—/g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
   | python3 "$HERE/filters/inline-html-tables.py" \
+  | perl -0pe 's#<style\b.*?</style>##gis; s#</?(span|div)\b[^>]*>##gi' \
   > "$TMPDIR/paper.md"
 
 echo "==> Compiling with pandoc + tectonic"
 pandoc "$TMPDIR/paper.md" \
   --from markdown+raw_html+pipe_tables+yaml_metadata_block \
   --to pdf \
-  --include-in-header "$HERE/filters/table-preamble.tex" \
   --pdf-engine=tectonic \
   --pdf-engine-opt=--keep-logs \
   -V documentclass=article \
