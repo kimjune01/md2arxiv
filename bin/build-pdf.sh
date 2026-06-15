@@ -18,6 +18,7 @@
 
 set -euo pipefail
 
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC="${1:?usage: build-paper-pdf.sh <source.md> [output.pdf]}"
 [ -f "$SRC" ] || { echo "source not found: $SRC" >&2; exit 1; }
 
@@ -53,17 +54,20 @@ echo "==> Preprocessing markdown"
 # the rasterized figures; convert inline-math backticks for common math
 # identifiers; fold glyphs the PDF font lacks (arrows, >=, check/cross) to ASCII.
 sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
+  | sed '/\[Download PDF\]/d' \
   | sed -E "s|/assets/([a-z0-9-]+)\.svg|$TMPDIR/\1.png|g" \
   | sed -E 's#<img[^>]*src="([^"]+)"[^>]*>#\n![](\1)\n#g' \
   | sed -E 's#</?figure[^>]*>##g; s#</?figcaption[^>]*>##g' \
   | sed -E 's/`(S_n|p_0|p_1|p₀|p₁|ε|X_i|FAIL_TO_PASS|PASS_TO_PASS|H|T|N|K)`/$\1$/g' \
   | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/—/g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
+  | python3 "$HERE/filters/inline-html-tables.py" \
   > "$TMPDIR/paper.md"
 
 echo "==> Compiling with pandoc + tectonic"
 pandoc "$TMPDIR/paper.md" \
   --from markdown+raw_html+pipe_tables+yaml_metadata_block \
   --to pdf \
+  --include-in-header "$HERE/filters/table-preamble.tex" \
   --pdf-engine=tectonic \
   --pdf-engine-opt=--keep-logs \
   -V documentclass=article \

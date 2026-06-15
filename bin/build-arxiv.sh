@@ -61,6 +61,7 @@ done < <(grep -oE '/assets/[a-z0-9-]+\.svg' "$SRC" | sort -u || true)
 echo "==> Preprocessing markdown"
 PRE="$BUNDLE/.paper.md"
 sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
+  | sed '/\[Download PDF\]/d' \
   | sed -E 's#/assets/([a-z0-9-]+)\.svg#\1.pdf#g' \
   | sed -E 's#<img[^>]*src="([^"]+)"[^>]*>#\n![](\1)\n#g' \
   | sed -E 's#</?figure[^>]*>##g; s#</?figcaption[^>]*>##g' \
@@ -68,6 +69,7 @@ sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | sed -E "s#href=\"/#href=\"${SITE}/#g" \
   | sed -E 's/`S_n`/$S_n$/g; s/`X_i`/$X_i$/g; s/`p_0`|`p₀`/$p_0$/g; s/`p_1`|`p₁`/$p_1$/g; s/`ε`/$\\epsilon$/g' \
   | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
+  | python3 "$HERE/filters/inline-html-tables.py" \
   > "$PRE"
 
 # --- pandoc: markdown -> LaTeX source (not PDF) ---
@@ -78,7 +80,7 @@ DATE_ARG=(); [ -n "$DATE" ] && DATE_ARG=(-V date="$DATE")
     --standalone \
     --from markdown+raw_html+pipe_tables+yaml_metadata_block \
     --to latex \
-    --lua-filter "$HERE/filters/html-tables.lua" \
+    --include-in-header "$HERE/filters/table-preamble.tex" \
     -V documentclass=article -V geometry:margin=1in -V fontsize=10pt \
     -V linkcolor=blue -V urlcolor=blue \
     -V title="$TITLE" "${SUB_ARG[@]}" -V author="June Kim" "${DATE_ARG[@]}" \

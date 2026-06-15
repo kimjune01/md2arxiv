@@ -40,9 +40,11 @@ site-relative links rewrite to (default `https://june.kim`).
 
 **Deterministic (owns arXiv-compat):** strip frontmatter; rasterize referenced
 SVGs to vector PDF; convert `<figure>/<img>` to markdown images; rewrite
-site-relative links to absolute URLs; a Lua filter (`filters/html-tables.lua`)
-turns raw-HTML tables into native LaTeX via pandoc's HTML reader (styling
-dropped, which is what arXiv wants); pandoc emits `main.tex`; arXiv-convention
+site-relative links to absolute URLs; a preprocessing step
+(`filters/inline-html-tables.py`) renders each raw-HTML table to LaTeX via
+pandoc's HTML reader and inlines it (styling dropped, which is what arXiv wants),
+because the markdown reader otherwise shreds tables tag-by-tag; pandoc emits
+`main.tex`; arXiv-convention
 checks (no `.svg`, bare figure filenames, `\pdfoutput=1`, safe names); assemble
 the source-only zip; compile with tectonic as the gate.
 
