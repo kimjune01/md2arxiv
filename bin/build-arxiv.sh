@@ -82,7 +82,7 @@ DATE_ARG=(); [ -n "$DATE" ] && DATE_ARG=(-V date="$DATE")
     -V documentclass=article -V geometry:margin=1in -V fontsize=10pt \
     -V linkcolor=blue -V urlcolor=blue \
     -V title="$TITLE" "${SUB_ARG[@]}" -V author="June Kim" "${DATE_ARG[@]}" \
-    --toc --toc-depth=2 --number-sections \
+    --number-sections \
     -o main.tex )
 
 cat > "$BUNDLE/00README.txt" <<EOF

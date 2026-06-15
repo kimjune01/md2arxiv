@@ -77,8 +77,6 @@ pandoc "$TMPDIR/paper.md" \
   ${SUBTITLE:+-V subtitle="$SUBTITLE"} \
   -V author="June Kim" \
   ${DATE:+-V date="$DATE"} \
-  --toc \
-  --toc-depth=2 \
   --number-sections \
   -o "$OUT"
 
