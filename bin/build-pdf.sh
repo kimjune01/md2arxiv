@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Build an arxiv-shape PDF from any paper's markdown source.
 #
 # One-time setup:

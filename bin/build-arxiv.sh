@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Build an arXiv-ready LaTeX SOURCE bundle from a paper's Markdown source.
 #
 # arXiv rejects PDFs created from TeX/LaTeX; it wants the source. This produces a

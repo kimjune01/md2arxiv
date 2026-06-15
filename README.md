@@ -63,3 +63,7 @@ export MD2ARXIV_LLM='claude -p'   # any CLI: reads a prompt on stdin, prints cor
 - Pure-HTML diagram blocks (e.g. an inline colored-span pipeline) are dropped.
 - The local tectonic compile is a good proxy for arXiv, not a guarantee; inspect
   `main.pdf` and, on first upload, arXiv's own compile output.
+
+## License
+
+GPL-3.0-or-later. See [LICENSE](LICENSE).
