@@ -55,6 +55,7 @@ echo "==> Preprocessing markdown"
 # identifiers; fold glyphs the PDF font lacks (arrows, >=, check/cross) to ASCII.
 sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | sed '/\[Download PDF\]/d' \
+  | perl -0777 -pe 's{(<figure\b.*?</figure>)}{ index(lc($1),"<img")>=0 || index(lc($1),"<table")>=0 ? $1 : "" }gse' \
   | sed -E "s|/assets/([a-z0-9-]+)\.svg|$TMPDIR/\1.png|g" \
   | sed -E 's#<img[^>]*src="([^"]+)"[^>]*>#\n![](\1)\n#g' \
   | sed -E 's#</?figure[^>]*>##g; s#</?figcaption[^>]*>##g' \
