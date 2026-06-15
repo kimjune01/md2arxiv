@@ -82,6 +82,7 @@ DATE_ARG=(); [ -n "$DATE" ] && DATE_ARG=(-V date="$DATE")
     --standalone \
     --from markdown+raw_html+pipe_tables+yaml_metadata_block \
     --to latex \
+    --include-in-header "$HERE/filters/table-preamble.tex" \
     -V documentclass=article -V geometry:margin=1in -V fontsize=10pt \
     -V linkcolor=blue -V urlcolor=blue \
     -V title="$TITLE" "${SUB_ARG[@]}" -V author="June Kim" "${DATE_ARG[@]}" \

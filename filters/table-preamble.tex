@@ -1,0 +1,6 @@
+% Wide-table handling: shrink every table, tighten column padding, and let long
+% lines stretch rather than overflow into the next column. The standard arXiv
+% convention for a comparison table too wide at body size.
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\footnotesize\setlength{\tabcolsep}{4pt}}
+\setlength{\emergencystretch}{3em}

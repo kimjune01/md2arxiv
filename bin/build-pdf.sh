@@ -69,6 +69,7 @@ echo "==> Compiling with pandoc + tectonic"
 pandoc "$TMPDIR/paper.md" \
   --from markdown+raw_html+pipe_tables+yaml_metadata_block \
   --to pdf \
+  --include-in-header "$HERE/filters/table-preamble.tex" \
   --pdf-engine=tectonic \
   --pdf-engine-opt=--keep-logs \
   -V documentclass=article \
