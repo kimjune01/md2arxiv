@@ -81,11 +81,8 @@ sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | sed -E '/^#/ s/\} \{/ /g' \
   | sed -E 's#/assets/([a-z0-9-]+)\.svg#\1.pdf#g' \
   | sed -E "s#\]\(/#](${SITE}/#g" \
-  | sed -E "s#href=\"/#href=\"${SITE}/#g" \
   | sed -E 's/`S_n`/$S_n$/g; s/`X_i`/$X_i$/g; s/`p_0`|`p₀`/$p_0$/g; s/`p_1`|`p₁`/$p_1$/g; s/`ε`/$\\epsilon$/g' \
   | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
-  | python3 "$HERE/filters/inline-html-tables.py" \
-  | perl -0pe 's#<style\b.*?</style>##gis; s#</?(span|div)\b[^>]*>##gi' \
   | sed -E 's/§\(([a-z0-9-]+)\)/\\S\\ref{\1}/g' \
   >> "$PRE"
 

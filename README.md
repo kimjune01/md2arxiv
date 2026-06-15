@@ -41,15 +41,16 @@ site-relative links rewrite to (default `https://june.kim`).
 
 ## What's deterministic vs LLM
 
-**Deterministic (owns arXiv-compat):** strip frontmatter; rasterize referenced
-SVGs to vector PDF; convert `<figure>/<img>` to markdown images; rewrite
-site-relative links to absolute URLs; a preprocessing step
-(`filters/inline-html-tables.py`) renders each raw-HTML table to LaTeX via
-pandoc's HTML reader and inlines it (styling dropped, which is what arXiv wants),
-because the markdown reader otherwise shreds tables tag-by-tag; pandoc emits
-`main.tex`; arXiv-convention
-checks (no `.svg`, bare figure filenames, `\pdfoutput=1`, safe names); assemble
-the source-only zip; compile with tectonic as the gate.
+Input is expected to be clean Markdown (native pipe/grid tables, `![caption](/assets/x.svg)`
+figures), not HTML-in-Markdown. pandoc + arxiv-style do the heavy lifting.
+
+**Deterministic (owns arXiv-compat):** pull the abstract into a styled `abstract`;
+rasterize referenced SVG figures to vector PDF and point the images at them;
+rewrite site-relative links to absolute URLs; resolve `§(id)` cross-refs to
+`\ref`; merge heading attributes and shift `##` to `\section`; pandoc emits
+`main.tex` with the arxiv-style preamble; arXiv-convention checks (no `.svg`,
+bare figure filenames, `\pdfoutput=1`, safe names, every `\includegraphics`
+target present); assemble the source-only zip; compile with tectonic as the gate.
 
 **LLM (optional, off by default):** a bounded compile-fix loop. If the bundle
 fails to compile and `MD2ARXIV_LLM` is set, the harness feeds the error log plus
