@@ -70,6 +70,7 @@ PRE="$BUNDLE/.paper.md"
     | awk '/^## Abstract/{f=1;next} /^## /{f=0} f' \
     | sed -E "s#\]\(/#](${SITE}/#g; s#href=\"/#href=\"${SITE}/#g" \
     | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
+    | sed -E 's/§\(([a-z0-9-]+)\)/\\S\\ref{\1}/g' \
     | sed 's/^/  /'
   echo '---'
   echo
@@ -77,30 +78,33 @@ PRE="$BUNDLE/.paper.md"
 sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | awk 'BEGIN{s=0} /^## Abstract/{s=1;next} s&&/^## /{s=0} s{next} {print}' \
   | sed '/\[Download PDF\]/d' \
-  | perl -0777 -pe 's{(<figure\b.*?</figure>)}{ index(lc($1),"<img")>=0 || index(lc($1),"<table")>=0 ? $1 : "" }gse' \
+  | sed -E '/^#/ s/\} \{/ /g' \
   | sed -E 's#/assets/([a-z0-9-]+)\.svg#\1.pdf#g' \
-  | sed -E 's#<img[^>]*src="([^"]+)"[^>]*>#\n![](\1)\n#g' \
-  | sed -E 's#</?figure[^>]*>##g; s#</?figcaption[^>]*>##g' \
   | sed -E "s#\]\(/#](${SITE}/#g" \
   | sed -E "s#href=\"/#href=\"${SITE}/#g" \
   | sed -E 's/`S_n`/$S_n$/g; s/`X_i`/$X_i$/g; s/`p_0`|`p₀`/$p_0$/g; s/`p_1`|`p₁`/$p_1$/g; s/`ε`/$\\epsilon$/g' \
   | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
   | python3 "$HERE/filters/inline-html-tables.py" \
   | perl -0pe 's#<style\b.*?</style>##gis; s#</?(span|div)\b[^>]*>##gi' \
+  | sed -E 's/§\(([a-z0-9-]+)\)/\\S\\ref{\1}/g' \
   >> "$PRE"
 
 # --- pandoc: markdown -> LaTeX source (not PDF) ---
 echo "==> pandoc: markdown -> main.tex"
 SUB_ARG=(); [ -n "$SUBTITLE" ] && SUB_ARG=(-V subtitle="$SUBTITLE")
-DATE_ARG=(); [ -n "$DATE" ] && DATE_ARG=(-V date="$DATE")
+DATE_PROSE="$(date -j -f '%Y-%m-%d' "$DATE" '+%B %-d, %Y' 2>/dev/null || echo "$DATE")"
+DATE_ARG=(); [ -n "$DATE_PROSE" ] && DATE_ARG=(-V date="$DATE_PROSE")
+AUTHOR="${MD2ARXIV_AUTHOR:-}"
+[ -n "$AUTHOR" ] || AUTHOR='June Kim\\ \texttt{kimjune01@gmail.com}\\ ORCID 0009-0005-3153-9396'
 ( cd "$BUNDLE" && pandoc ".paper.md" \
     --standalone \
     --from markdown+raw_html+pipe_tables+yaml_metadata_block \
     --to latex \
     --include-in-header "$HERE/templates/preamble.tex" \
+    --shift-heading-level-by=-1 \
     -V documentclass=article -V fontsize=10pt \
     -V linkcolor=blue -V urlcolor=blue \
-    -V title="$TITLE" "${SUB_ARG[@]}" -V author="June Kim" "${DATE_ARG[@]}" \
+    -V title="$TITLE" "${SUB_ARG[@]}" -V author="$AUTHOR" "${DATE_ARG[@]}" \
     --number-sections \
     -o main.tex )
 
