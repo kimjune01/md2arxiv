@@ -1,0 +1,6 @@
+% arXiv preprint look (kourgeorge/arxiv-style, MIT) + wide-table handling.
+% arxiv.sty is shipped alongside main.tex so \usepackage{arxiv} resolves.
+\usepackage{arxiv}
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\footnotesize\setlength{\tabcolsep}{4pt}}
+\setlength{\emergencystretch}{3em}

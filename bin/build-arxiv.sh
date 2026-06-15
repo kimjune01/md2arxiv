@@ -32,6 +32,7 @@ ASSETS="${MD2ARXIV_ASSETS:-public/assets}"
 SITE="${MD2ARXIV_SITE:-https://june.kim}"
 
 rm -rf "$BUNDLE"; mkdir -p "$BUNDLE"
+cp "$HERE/templates/arxiv.sty" "$BUNDLE/"   # arXiv preprint style, shipped in the bundle
 
 FM="$(awk 'NR==1 && $0=="---"{f=1;next} f && $0=="---"{exit} f{print}' "$SRC")"
 fmval(){ printf '%s\n' "$FM" | sed -n "s/^$1: *//p" | head -1 | sed -e 's/^"//' -e 's/"$//'; }
@@ -60,7 +61,21 @@ done < <(grep -oE '/assets/[a-z0-9-]+\.svg' "$SRC" | sort -u || true)
 # --- preprocess markdown (see README for the rules) ---
 echo "==> Preprocessing markdown"
 PRE="$BUNDLE/.paper.md"
+# Pull the abstract into YAML metadata (markdown-parsed) so arxiv.sty's abstract
+# environment styles it, then strip that section from the body.
+{
+  echo '---'
+  echo 'abstract: |'
+  sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
+    | awk '/^## Abstract/{f=1;next} /^## /{f=0} f' \
+    | sed -E "s#\]\(/#](${SITE}/#g; s#href=\"/#href=\"${SITE}/#g" \
+    | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
+    | sed 's/^/  /'
+  echo '---'
+  echo
+} > "$PRE"
 sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
+  | awk 'BEGIN{s=0} /^## Abstract/{s=1;next} s&&/^## /{s=0} s{next} {print}' \
   | sed '/\[Download PDF\]/d' \
   | perl -0777 -pe 's{(<figure\b.*?</figure>)}{ index(lc($1),"<img")>=0 || index(lc($1),"<table")>=0 ? $1 : "" }gse' \
   | sed -E 's#/assets/([a-z0-9-]+)\.svg#\1.pdf#g' \
@@ -72,7 +87,7 @@ sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
   | python3 "$HERE/filters/inline-html-tables.py" \
   | perl -0pe 's#<style\b.*?</style>##gis; s#</?(span|div)\b[^>]*>##gi' \
-  > "$PRE"
+  >> "$PRE"
 
 # --- pandoc: markdown -> LaTeX source (not PDF) ---
 echo "==> pandoc: markdown -> main.tex"
@@ -82,8 +97,8 @@ DATE_ARG=(); [ -n "$DATE" ] && DATE_ARG=(-V date="$DATE")
     --standalone \
     --from markdown+raw_html+pipe_tables+yaml_metadata_block \
     --to latex \
-    --include-in-header "$HERE/filters/table-preamble.tex" \
-    -V documentclass=article -V geometry:margin=1in -V fontsize=10pt \
+    --include-in-header "$HERE/templates/preamble.tex" \
+    -V documentclass=article -V fontsize=10pt \
     -V linkcolor=blue -V urlcolor=blue \
     -V title="$TITLE" "${SUB_ARG[@]}" -V author="June Kim" "${DATE_ARG[@]}" \
     --number-sections \

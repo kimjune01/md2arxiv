@@ -1,9 +1,12 @@
 # md2arxiv
 
-Turn an Astro/Markdown paper into (a) a reading PDF and (b) an arXiv-ready LaTeX
-**source** bundle. The translation is deliberately thin: deterministic code owns
-arXiv compatibility, an LLM is used only where the input is messy, and the
-compiler is the gate. When a judgment call comes up, conform to arXiv conventions.
+Turn an Astro/Markdown paper into an arXiv-ready LaTeX **source** bundle and a
+reading PDF, both wearing the arXiv-preprint look (kourgeorge/arxiv-style). The
+reading PDF *is* the composition's compiled `main.pdf`, so the download and the
+submission share one presentation. The translation is deliberately thin:
+deterministic code owns arXiv compatibility, an LLM is used only where the input
+is messy, and the compiler is the gate. On a judgment call, conform to arXiv
+conventions.
 
 ## Why source, not PDF
 
