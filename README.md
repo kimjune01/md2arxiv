@@ -63,10 +63,9 @@ export MD2ARXIV_LLM='claude -p'   # any CLI: reads a prompt on stdin, prints cor
 
 ## Known limits (v1)
 
-- `§(id)` cross-reference tokens are not resolved (they render literally); the
-  Astro autonumber plugin does that on the web. A future LLM/polish pass can.
-- Figure captions land as body text after the image, not in `\caption{}`.
-- Pure-HTML diagram blocks (e.g. an inline colored-span pipeline) are dropped.
+- Pure-HTML diagram blocks (e.g. an inline colored-span pipeline) are dropped;
+  pandoc cannot render raw HTML into LaTeX. Use a markdown image
+  (`![caption](/assets/x.svg)`) so the figure embeds with a `\caption{}`.
 - The local tectonic compile is a good proxy for arXiv, not a guarantee; inspect
   `main.pdf` and, on first upload, arXiv's own compile output.
 

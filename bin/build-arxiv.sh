@@ -92,7 +92,7 @@ SUB_ARG=(); [ -n "$SUBTITLE" ] && SUB_ARG=(-V subtitle="$SUBTITLE")
 DATE_PROSE="$(date -j -f '%Y-%m-%d' "$DATE" '+%B %-d, %Y' 2>/dev/null || echo "$DATE")"
 DATE_ARG=(); [ -n "$DATE_PROSE" ] && DATE_ARG=(-V date="$DATE_PROSE")
 AUTHOR="${MD2ARXIV_AUTHOR:-}"
-[ -n "$AUTHOR" ] || AUTHOR='June Kim\\ \texttt{kimjune01@gmail.com}\\ ORCID 0009-0005-3153-9396'
+[ -n "$AUTHOR" ] || AUTHOR='June Kim\\ Independent Researcher\\ \texttt{june@june.kim}\\ ORCID 0009-0005-3153-9396'
 ( cd "$BUNDLE" && pandoc ".paper.md" \
     --standalone \
     --from markdown+raw_html+pipe_tables+yaml_metadata_block \
