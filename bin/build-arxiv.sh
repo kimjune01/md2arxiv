@@ -12,9 +12,11 @@
 #          out-dir defaults to build/<slug>-arxiv/
 #
 # NOTE on the compile gate: arXiv compiles pdfLaTeX (TeX Live). The local gate
-# here is tectonic (XeTeX-based), a convenient proxy, not identical. Glyphs are
-# folded to ASCII to narrow the gap, but inspect main.pdf and arXiv's own compile
-# output on first upload. Install TeX Live and swap in `pdflatex` for an exact gate.
+# here is tectonic (XeTeX-based), a convenient proxy, not identical. Capability
+# glyphs render as packaged symbols (pifont checks, tikz Harvey balls, accsupp-
+# tagged) and a few are folded to math/ASCII, so the output is pdfLaTeX-safe; still
+# inspect main.pdf and arXiv's own compile output on first upload. Install TeX Live
+# and swap in `pdflatex` for an exact gate.
 #
 # Optional LLM compile-fix loop (off unless set):
 #   export MD2ARXIV_LLM='claude -p'    # CLI that reads a prompt on stdin and
@@ -69,7 +71,7 @@ PRE="$BUNDLE/.paper.md"
   sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
     | awk '/^## Abstract/{f=1;next} /^## /{f=0} f' \
     | sed -E "s#\]\(/#](${SITE}/#g; s#href=\"/#href=\"${SITE}/#g" \
-    | sed 's/✓/\\ding{51}/g; s/✗/\\ding{55}/g; s/◐/\\hvhalf{}/g; s/●/\\hvfull{}/g; s/○/\\hvempty{}/g; s/·/\\textperiodcentered{}/g; s/→/$\\rightarrow$/g; s/←/$\\leftarrow$/g; s/⇒/$\\Rightarrow$/g; s/≥/$\\geq$/g; s/≤/$\\leq$/g; s/λ/$\\lambda$/g' \
+    | sed 's/✓/\\cmark{}/g; s/✗/\\xmark{}/g; s/◐/\\hvhalf{}/g; s/●/\\hvfull{}/g; s/○/\\hvempty{}/g; s/·/\\textperiodcentered{}/g; s/→/$\\rightarrow$/g; s/←/$\\leftarrow$/g; s/⇒/$\\Rightarrow$/g; s/≥/$\\geq$/g; s/≤/$\\leq$/g; s/λ/$\\lambda$/g' \
     | sed -E 's/§\(([a-z0-9-]+)\)/\\S\\ref{\1}/g' \
     | sed 's/^/  /'
   echo '---'
@@ -83,7 +85,7 @@ sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | sed -E 's#/assets/([a-z0-9-]+)\.svg#\1.pdf#g' \
   | sed -E "s#\]\(/#](${SITE}/#g" \
   | sed -E 's/`S_n`/$S_n$/g; s/`X_i`/$X_i$/g; s/`p_0`|`p₀`/$p_0$/g; s/`p_1`|`p₁`/$p_1$/g; s/`ε`/$\\epsilon$/g' \
-  | sed 's/✓/\\ding{51}/g; s/✗/\\ding{55}/g; s/◐/\\hvhalf{}/g; s/●/\\hvfull{}/g; s/○/\\hvempty{}/g; s/·/\\textperiodcentered{}/g; s/→/$\\rightarrow$/g; s/←/$\\leftarrow$/g; s/⇒/$\\Rightarrow$/g; s/≥/$\\geq$/g; s/≤/$\\leq$/g; s/λ/$\\lambda$/g' \
+  | sed 's/✓/\\cmark{}/g; s/✗/\\xmark{}/g; s/◐/\\hvhalf{}/g; s/●/\\hvfull{}/g; s/○/\\hvempty{}/g; s/·/\\textperiodcentered{}/g; s/→/$\\rightarrow$/g; s/←/$\\leftarrow$/g; s/⇒/$\\Rightarrow$/g; s/≥/$\\geq$/g; s/≤/$\\leq$/g; s/λ/$\\lambda$/g' \
   | sed -E 's/§\(([a-z0-9-]+)\)/\\S\\ref{\1}/g' \
   >> "$PRE"
 

@@ -6,9 +6,15 @@
 \setlength{\emergencystretch}{3em}
 
 % Capability-table glyphs. Checkmarks/crosses via pifont (\ding, a matched pair);
-% Harvey balls via tikz (clash-free with amssymb, which wasysym is not).
+% Harvey balls via tikz (clash-free with amssymb, which wasysym is not). Each is
+% wrapped in accsupp ActualText so it extracts as its Unicode char (pdftotext,
+% screen readers, copy-paste) instead of a dingbat-font artifact.
 \usepackage{pifont}
 \usepackage{tikz}
-\DeclareRobustCommand{\hvfull}{\tikz[baseline=-0.5ex]\fill (0,0) circle (0.45ex);}
-\DeclareRobustCommand{\hvempty}{\tikz[baseline=-0.5ex]\draw[line width=0.35pt] (0,0) circle (0.45ex);}
-\DeclareRobustCommand{\hvhalf}{\tikz[baseline=-0.5ex]{\fill (0,0.45ex) arc (90:270:0.45ex) -- cycle; \draw[line width=0.35pt] (0,0) circle (0.45ex);}}
+\usepackage{accsupp}
+\newcommand{\axglyph}[2]{\BeginAccSupp{method=hex,unicode,ActualText=#1}#2\EndAccSupp}
+\DeclareRobustCommand{\cmark}{\axglyph{2713}{\ding{51}}}
+\DeclareRobustCommand{\xmark}{\axglyph{2717}{\ding{55}}}
+\DeclareRobustCommand{\hvfull}{\axglyph{25CF}{\tikz[baseline=-0.5ex]\fill (0,0) circle (0.45ex);}}
+\DeclareRobustCommand{\hvempty}{\axglyph{25CB}{\tikz[baseline=-0.5ex]\draw[line width=0.35pt] (0,0) circle (0.45ex);}}
+\DeclareRobustCommand{\hvhalf}{\axglyph{25D0}{\tikz[baseline=-0.5ex]{\fill (0,0.45ex) arc (90:270:0.45ex) -- cycle; \draw[line width=0.35pt] (0,0) circle (0.45ex);}}}

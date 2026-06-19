@@ -47,7 +47,10 @@ figures), not HTML-in-Markdown. pandoc + arxiv-style do the heavy lifting.
 **Deterministic (owns arXiv-compat):** pull the abstract into a styled `abstract`;
 rasterize referenced SVG figures to vector PDF and point the images at them;
 rewrite site-relative links to absolute URLs; resolve `§(id)` cross-refs to
-`\ref`; merge heading attributes and shift `##` to `\section`; pandoc emits
+`\ref`; render capability glyphs as symbols (`✓`/`✗` via pifont, `●◐○` Harvey
+balls via tikz, each `accsupp`-tagged with `ActualText` so it extracts and reads
+as its Unicode char) and fold arrows/comparators to math (`→` `≥` `λ`); merge
+heading attributes and shift `##` to `\section`; pandoc emits
 `main.tex` with the arxiv-style preamble; arXiv-convention checks (no `.svg`,
 bare figure filenames, `\pdfoutput=1`, safe names, every `\includegraphics`
 target present); assemble the source-only zip; compile with tectonic as the gate.
@@ -63,9 +66,11 @@ export MD2ARXIV_LLM='claude -p'   # any CLI: reads a prompt on stdin, prints cor
 
 ## Known limits (v1)
 
-- Pure-HTML diagram blocks (e.g. an inline colored-span pipeline) are dropped;
-  pandoc cannot render raw HTML into LaTeX. Use a markdown image
-  (`![caption](/assets/x.svg)`) so the figure embeds with a `\caption{}`.
+- HTML blocks are dropped — pandoc cannot render raw HTML into LaTeX. A
+  `<figure>`/`<img>` silently loses its image (only the `<figcaption>` text
+  survives, as an orphan paragraph), and an HTML `<table>` collapses to a flat
+  list. Use markdown instead: `![caption](/assets/x.svg)` for figures (embeds
+  with a `\caption{}`) and native pipe tables.
 - The local tectonic compile is a good proxy for arXiv, not a guarantee; inspect
   `main.pdf` and, on first upload, arXiv's own compile output.
 
