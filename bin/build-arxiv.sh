@@ -69,7 +69,7 @@ PRE="$BUNDLE/.paper.md"
   sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
     | awk '/^## Abstract/{f=1;next} /^## /{f=0} f' \
     | sed -E "s#\]\(/#](${SITE}/#g; s#href=\"/#href=\"${SITE}/#g" \
-    | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
+    | sed 's/✓/\\ding{51}/g; s/✗/\\ding{55}/g; s/◐/\\hvhalf{}/g; s/●/\\hvfull{}/g; s/○/\\hvempty{}/g; s/·/\\textperiodcentered{}/g; s/→/$\\rightarrow$/g; s/←/$\\leftarrow$/g; s/⇒/$\\Rightarrow$/g; s/≥/$\\geq$/g; s/≤/$\\leq$/g; s/λ/$\\lambda$/g' \
     | sed -E 's/§\(([a-z0-9-]+)\)/\\S\\ref{\1}/g' \
     | sed 's/^/  /'
   echo '---'
@@ -77,12 +77,13 @@ PRE="$BUNDLE/.paper.md"
 } > "$PRE"
 sed '1{/^---$/!q;};1,/^---$/d' "$SRC" \
   | awk 'BEGIN{s=0} /^## Abstract/{s=1;next} s&&/^## /{s=0} s{next} {print}' \
+  | awk '/<!--[[:space:]]*\/pdf-skip[[:space:]]*-->/{s=0;next} /<!--[[:space:]]*pdf-skip[[:space:]]*-->/{s=1} !s' \
   | sed '/\[Download PDF\]/d' \
   | sed -E '/^#/ s/\} \{/ /g' \
   | sed -E 's#/assets/([a-z0-9-]+)\.svg#\1.pdf#g' \
   | sed -E "s#\]\(/#](${SITE}/#g" \
   | sed -E 's/`S_n`/$S_n$/g; s/`X_i`/$X_i$/g; s/`p_0`|`p₀`/$p_0$/g; s/`p_1`|`p₁`/$p_1$/g; s/`ε`/$\\epsilon$/g' \
-  | sed 's/✓/Y/g; s/✗/N/g; s/◐/~/g; s/·/, /g; s/→/->/g; s/⇒/=>/g; s/≥/>=/g; s/≤/<=/g' \
+  | sed 's/✓/\\ding{51}/g; s/✗/\\ding{55}/g; s/◐/\\hvhalf{}/g; s/●/\\hvfull{}/g; s/○/\\hvempty{}/g; s/·/\\textperiodcentered{}/g; s/→/$\\rightarrow$/g; s/←/$\\leftarrow$/g; s/⇒/$\\Rightarrow$/g; s/≥/$\\geq$/g; s/≤/$\\leq$/g; s/λ/$\\lambda$/g' \
   | sed -E 's/§\(([a-z0-9-]+)\)/\\S\\ref{\1}/g' \
   >> "$PRE"
 
@@ -95,7 +96,7 @@ AUTHOR="${MD2ARXIV_AUTHOR:-}"
 [ -n "$AUTHOR" ] || AUTHOR='June Kim\\ Independent Researcher\\ \texttt{june@june.kim}\\ ORCID 0009-0005-3153-9396'
 ( cd "$BUNDLE" && pandoc ".paper.md" \
     --standalone \
-    --from markdown+raw_html+pipe_tables+yaml_metadata_block \
+    --from markdown+raw_html+raw_tex+pipe_tables+yaml_metadata_block \
     --to latex \
     --include-in-header "$HERE/templates/preamble.tex" \
     --shift-heading-level-by=-1 \

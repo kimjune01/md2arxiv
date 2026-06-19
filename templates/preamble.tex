@@ -4,3 +4,11 @@
 \usepackage{etoolbox}
 \AtBeginEnvironment{longtable}{\footnotesize\setlength{\tabcolsep}{4pt}}
 \setlength{\emergencystretch}{3em}
+
+% Capability-table glyphs. Checkmarks/crosses via pifont (\ding, a matched pair);
+% Harvey balls via tikz (clash-free with amssymb, which wasysym is not).
+\usepackage{pifont}
+\usepackage{tikz}
+\DeclareRobustCommand{\hvfull}{\tikz[baseline=-0.5ex]\fill (0,0) circle (0.45ex);}
+\DeclareRobustCommand{\hvempty}{\tikz[baseline=-0.5ex]\draw[line width=0.35pt] (0,0) circle (0.45ex);}
+\DeclareRobustCommand{\hvhalf}{\tikz[baseline=-0.5ex]{\fill (0,0.45ex) arc (90:270:0.45ex) -- cycle; \draw[line width=0.35pt] (0,0) circle (0.45ex);}}
